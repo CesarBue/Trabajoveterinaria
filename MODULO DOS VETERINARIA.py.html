@@ -1,0 +1,498 @@
+<html>
+<head>
+<title>MODULO DOS VETERINARIA.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #7a7e85;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+MODULO DOS VETERINARIA.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">tkinter </span><span class="s0">as </span><span class="s1">tk</span>
+<span class="s0">from </span><span class="s1">tkinter </span><span class="s0">import </span><span class="s1">ttk</span><span class="s2">, </span><span class="s1">messagebox</span>
+
+<span class="s3"># ESTILOS Y PALETA PROVISIONAL</span>
+<span class="s1">COLOR_BG_MAIN </span><span class="s2">= </span><span class="s4">&quot;#F8FAFC&quot;        </span><span class="s3"># Fondo general gris muy claro</span>
+<span class="s1">COLOR_SIDEBAR </span><span class="s2">= </span><span class="s4">&quot;#1E293B&quot;        </span><span class="s3"># Azul oscuro elegante para el menú</span>
+<span class="s1">COLOR_PRIMARY </span><span class="s2">= </span><span class="s4">&quot;#2563EB&quot;        </span><span class="s3"># Azul principal para botones</span>
+<span class="s1">COLOR_PRIMARY_HOVER </span><span class="s2">= </span><span class="s4">&quot;#1D4ED8&quot;  </span><span class="s3"># Azul oscuro al pasar el mouse</span>
+<span class="s1">COLOR_CARD_BG </span><span class="s2">= </span><span class="s4">&quot;#FFFFFF&quot;        </span><span class="s3"># Blanco para tarjetas</span>
+<span class="s1">COLOR_TEXT </span><span class="s2">= </span><span class="s4">&quot;#0F172A&quot;           </span><span class="s3"># Texto oscuro principal</span>
+<span class="s1">COLOR_MUTED </span><span class="s2">= </span><span class="s4">&quot;#64748B&quot;          </span><span class="s3"># Texto secundario/gris</span>
+<span class="s1">FONT_TITLE </span><span class="s2">= (</span><span class="s4">&quot;Segoe UI&quot;</span><span class="s2">, </span><span class="s5">20</span><span class="s2">, </span><span class="s4">&quot;bold&quot;</span><span class="s2">)</span>
+<span class="s1">FONT_SUBTITLE </span><span class="s2">= (</span><span class="s4">&quot;Segoe UI&quot;</span><span class="s2">, </span><span class="s5">12</span><span class="s2">, </span><span class="s4">&quot;bold&quot;</span><span class="s2">)</span>
+<span class="s1">FONT_BODY </span><span class="s2">= (</span><span class="s4">&quot;Segoe UI&quot;</span><span class="s2">, </span><span class="s5">10</span><span class="s2">)</span>
+<span class="s1">FONT_BOLD </span><span class="s2">= (</span><span class="s4">&quot;Segoe UI&quot;</span><span class="s2">, </span><span class="s5">10</span><span class="s2">, </span><span class="s4">&quot;bold&quot;</span><span class="s2">)</span>
+
+<span class="s3"># REGISTRO DE PRUEBA</span>
+
+<span class="s1">mascotas </span><span class="s2">= [</span>
+    <span class="s2">{</span>
+        <span class="s4">&quot;id_mascota&quot;</span><span class="s2">: </span><span class="s5">1</span><span class="s2">,</span>
+        <span class="s4">&quot;id_usuario&quot;</span><span class="s2">: </span><span class="s5">1</span><span class="s2">,</span>
+        <span class="s4">&quot;nombre&quot;</span><span class="s2">: </span><span class="s4">&quot;Mascota de prueba&quot;</span><span class="s2">,</span>
+        <span class="s4">&quot;tipo&quot;</span><span class="s2">: </span><span class="s4">&quot;Perro&quot;</span><span class="s2">,</span>
+        <span class="s4">&quot;raza&quot;</span><span class="s2">: </span><span class="s4">&quot;Labrador&quot;</span><span class="s2">,</span>
+        <span class="s4">&quot;edad&quot;</span><span class="s2">: </span><span class="s5">3</span><span class="s2">,</span>
+        <span class="s4">&quot;peso&quot;</span><span class="s2">: </span><span class="s5">12.5</span><span class="s2">,</span>
+        <span class="s4">&quot;foto&quot;</span><span class="s2">: </span><span class="s0">None</span><span class="s2">,</span>
+        <span class="s4">&quot;observaciones&quot;</span><span class="s2">: </span><span class="s4">&quot;Padece asma&quot;</span>
+    <span class="s2">}</span>
+<span class="s2">]</span>
+
+<span class="s1">usuario_actual </span><span class="s2">= {</span>
+    <span class="s4">&quot;id_usuario&quot;</span><span class="s2">: </span><span class="s5">1</span><span class="s2">,</span>
+    <span class="s4">&quot;nombre&quot;</span><span class="s2">: </span><span class="s4">&quot;Usuario x (temporal)&quot;</span>
+<span class="s2">}</span>
+
+
+<span class="s3"># FUNCIONES DE DATOS</span>
+<span class="s0">def </span><span class="s1">obtener_mascotas_usuario</span><span class="s2">(</span><span class="s1">id_usuario</span><span class="s2">):</span>
+    <span class="s0">return </span><span class="s2">[</span><span class="s1">m </span><span class="s0">for </span><span class="s1">m </span><span class="s0">in </span><span class="s1">mascotas </span><span class="s0">if </span><span class="s1">m</span><span class="s2">[</span><span class="s4">&quot;id_usuario&quot;</span><span class="s2">] == </span><span class="s1">id_usuario</span><span class="s2">]</span>
+
+<span class="s0">def </span><span class="s1">obtener_mascota_por_id</span><span class="s2">(</span><span class="s1">id_mascota</span><span class="s2">):</span>
+    <span class="s0">for </span><span class="s1">m </span><span class="s0">in </span><span class="s1">mascotas</span><span class="s2">:</span>
+        <span class="s0">if </span><span class="s1">m</span><span class="s2">[</span><span class="s4">&quot;id_mascota&quot;</span><span class="s2">] == </span><span class="s1">id_mascota</span><span class="s2">:</span>
+            <span class="s0">return </span><span class="s1">m</span>
+    <span class="s0">return None</span>
+
+
+
+<span class="s3"># Exepciones</span>
+
+<span class="s0">def </span><span class="s1">validar_datos</span><span class="s2">(</span><span class="s1">nombre</span><span class="s2">, </span><span class="s1">tipo</span><span class="s2">, </span><span class="s1">raza</span><span class="s2">, </span><span class="s1">edad</span><span class="s2">, </span><span class="s1">peso</span><span class="s2">):</span>
+    <span class="s1">errores </span><span class="s2">= []</span>
+    <span class="s0">if not </span><span class="s1">nombre</span><span class="s2">.</span><span class="s1">strip</span><span class="s2">():</span>
+        <span class="s1">errores</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s4">&quot;El nombre es obligatorio.&quot;</span><span class="s2">)</span>
+    <span class="s0">if not </span><span class="s1">tipo</span><span class="s2">.</span><span class="s1">strip</span><span class="s2">():</span>
+        <span class="s1">errores</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s4">&quot;El tipo de mascota es obligatorio.&quot;</span><span class="s2">)</span>
+    <span class="s0">if not </span><span class="s1">raza</span><span class="s2">.</span><span class="s1">strip</span><span class="s2">():</span>
+        <span class="s1">errores</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s4">&quot;La raza es obligatoria.&quot;</span><span class="s2">)</span>
+
+    <span class="s0">try</span><span class="s2">:</span>
+        <span class="s1">edad_num </span><span class="s2">= </span><span class="s1">int</span><span class="s2">(</span><span class="s1">edad</span><span class="s2">)</span>
+        <span class="s0">if </span><span class="s1">edad_num </span><span class="s2">&lt; </span><span class="s5">0</span><span class="s2">:</span>
+            <span class="s1">errores</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s4">&quot;La edad no puede ser negativa.&quot;</span><span class="s2">)</span>
+    <span class="s0">except </span><span class="s1">ValueError</span><span class="s2">:</span>
+        <span class="s1">errores</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s4">&quot;La edad debe ser un número entero.&quot;</span><span class="s2">)</span>
+
+    <span class="s0">try</span><span class="s2">:</span>
+        <span class="s1">peso_num </span><span class="s2">= </span><span class="s1">float</span><span class="s2">(</span><span class="s1">peso</span><span class="s2">)</span>
+        <span class="s0">if </span><span class="s1">peso_num </span><span class="s2">&lt;= </span><span class="s5">0</span><span class="s2">:</span>
+            <span class="s1">errores</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s4">&quot;El peso debe ser mayor que 0.&quot;</span><span class="s2">)</span>
+    <span class="s0">except </span><span class="s1">ValueError</span><span class="s2">:</span>
+        <span class="s1">errores</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s4">&quot;El peso debe ser un número.&quot;</span><span class="s2">)</span>
+
+    <span class="s0">return </span><span class="s1">errores</span>
+
+
+<span class="s3"># REGISTRAR MASCOTA</span>
+
+<span class="s0">def </span><span class="s1">registrar_mascota</span><span class="s2">():</span>
+    <span class="s1">nombre </span><span class="s2">= </span><span class="s1">entrada_nombre</span><span class="s2">.</span><span class="s1">get</span><span class="s2">()</span>
+    <span class="s1">tipo </span><span class="s2">= </span><span class="s1">combo_tipo</span><span class="s2">.</span><span class="s1">get</span><span class="s2">()</span>
+    <span class="s1">raza </span><span class="s2">= </span><span class="s1">entrada_raza</span><span class="s2">.</span><span class="s1">get</span><span class="s2">()</span>
+    <span class="s1">edad </span><span class="s2">= </span><span class="s1">entrada_edad</span><span class="s2">.</span><span class="s1">get</span><span class="s2">()</span>
+    <span class="s1">peso </span><span class="s2">= </span><span class="s1">entrada_peso</span><span class="s2">.</span><span class="s1">get</span><span class="s2">()</span>
+    <span class="s1">observaciones </span><span class="s2">= </span><span class="s1">entrada_observaciones</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s4">&quot;1.0&quot;</span><span class="s2">, </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">END</span><span class="s2">).</span><span class="s1">strip</span><span class="s2">()</span>
+
+    <span class="s1">errores </span><span class="s2">= </span><span class="s1">validar_datos</span><span class="s2">(</span><span class="s1">nombre</span><span class="s2">, </span><span class="s1">tipo</span><span class="s2">, </span><span class="s1">raza</span><span class="s2">, </span><span class="s1">edad</span><span class="s2">, </span><span class="s1">peso</span><span class="s2">)</span>
+
+    <span class="s0">if </span><span class="s1">errores</span><span class="s2">:</span>
+        <span class="s1">mensaje </span><span class="s2">= </span><span class="s4">&quot;Por favor revisa los siguientes campos:</span><span class="s0">\n\n</span><span class="s4">&quot; </span><span class="s2">+ </span><span class="s4">&quot;</span><span class="s0">\n</span><span class="s4">&quot;</span><span class="s2">.</span><span class="s1">join</span><span class="s2">([</span><span class="s4">f&quot;• </span><span class="s0">{</span><span class="s1">e</span><span class="s0">}</span><span class="s4">&quot; </span><span class="s0">for </span><span class="s1">e </span><span class="s0">in </span><span class="s1">errores</span><span class="s2">])</span>
+        <span class="s1">messagebox</span><span class="s2">.</span><span class="s1">showerror</span><span class="s2">(</span><span class="s4">&quot;Atención&quot;</span><span class="s2">, </span><span class="s1">mensaje</span><span class="s2">)</span>
+        <span class="s0">return</span>
+
+    <span class="s1">nuevo_id </span><span class="s2">= </span><span class="s1">len</span><span class="s2">(</span><span class="s1">mascotas</span><span class="s2">) + </span><span class="s5">1</span>
+    <span class="s1">nueva_mascota </span><span class="s2">= {</span>
+        <span class="s4">&quot;id_mascota&quot;</span><span class="s2">: </span><span class="s1">nuevo_id</span><span class="s2">,</span>
+        <span class="s4">&quot;id_usuario&quot;</span><span class="s2">: </span><span class="s1">usuario_actual</span><span class="s2">[</span><span class="s4">&quot;id_usuario&quot;</span><span class="s2">],</span>
+        <span class="s4">&quot;nombre&quot;</span><span class="s2">: </span><span class="s1">nombre</span><span class="s2">,</span>
+        <span class="s4">&quot;tipo&quot;</span><span class="s2">: </span><span class="s1">tipo</span><span class="s2">,</span>
+        <span class="s4">&quot;raza&quot;</span><span class="s2">: </span><span class="s1">raza</span><span class="s2">,</span>
+        <span class="s4">&quot;edad&quot;</span><span class="s2">: </span><span class="s1">int</span><span class="s2">(</span><span class="s1">edad</span><span class="s2">),</span>
+        <span class="s4">&quot;peso&quot;</span><span class="s2">: </span><span class="s1">float</span><span class="s2">(</span><span class="s1">peso</span><span class="s2">),</span>
+        <span class="s4">&quot;foto&quot;</span><span class="s2">: </span><span class="s0">None</span><span class="s2">,</span>
+        <span class="s4">&quot;observaciones&quot;</span><span class="s2">: </span><span class="s1">observaciones</span>
+    <span class="s2">}</span>
+
+    <span class="s1">mascotas</span><span class="s2">.</span><span class="s1">append</span><span class="s2">(</span><span class="s1">nueva_mascota</span><span class="s2">)</span>
+    <span class="s1">messagebox</span><span class="s2">.</span><span class="s1">showinfo</span><span class="s2">(</span><span class="s4">&quot;¡Éxito!&quot;</span><span class="s2">, </span><span class="s4">f&quot;¡</span><span class="s0">{</span><span class="s1">nombre</span><span class="s0">}  </span><span class="s4">Mascota registrada correctamente!&quot;</span><span class="s2">)</span>
+    <span class="s1">limpiar_formulario</span><span class="s2">()</span>
+    <span class="s1">mostrar_lista_mascotas</span><span class="s2">()</span>
+
+
+<span class="s3"># ============================================================</span>
+<span class="s3"># LIMPIAR FORMULARIO</span>
+<span class="s3"># ============================================================</span>
+<span class="s0">def </span><span class="s1">limpiar_formulario</span><span class="s2">():</span>
+    <span class="s1">entrada_nombre</span><span class="s2">.</span><span class="s1">delete</span><span class="s2">(</span><span class="s5">0</span><span class="s2">, </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">END</span><span class="s2">)</span>
+    <span class="s1">combo_tipo</span><span class="s2">.</span><span class="s1">set</span><span class="s2">(</span><span class="s4">&quot;&quot;</span><span class="s2">)</span>
+    <span class="s1">entrada_raza</span><span class="s2">.</span><span class="s1">delete</span><span class="s2">(</span><span class="s5">0</span><span class="s2">, </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">END</span><span class="s2">)</span>
+    <span class="s1">entrada_edad</span><span class="s2">.</span><span class="s1">delete</span><span class="s2">(</span><span class="s5">0</span><span class="s2">, </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">END</span><span class="s2">)</span>
+    <span class="s1">entrada_peso</span><span class="s2">.</span><span class="s1">delete</span><span class="s2">(</span><span class="s5">0</span><span class="s2">, </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">END</span><span class="s2">)</span>
+    <span class="s1">entrada_observaciones</span><span class="s2">.</span><span class="s1">delete</span><span class="s2">(</span><span class="s4">&quot;1.0&quot;</span><span class="s2">, </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">END</span><span class="s2">)</span>
+
+
+<span class="s3"># FUNCION MOSTRAR FORMULARIO</span>
+
+<span class="s0">def </span><span class="s1">mostrar_formulario</span><span class="s2">():</span>
+    <span class="s1">limpiar_contenido</span><span class="s2">()</span>
+
+    <span class="s1">titulo </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span>
+        <span class="s1">frame_contenido</span><span class="s2">,</span>
+        <span class="s1">text</span><span class="s2">=</span><span class="s4">&quot;➕ Registrar Nueva Mascota&quot;</span><span class="s2">,</span>
+        <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_TITLE</span><span class="s2">,</span>
+        <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_BG_MAIN</span><span class="s2">,</span>
+        <span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_TEXT</span>
+    <span class="s2">)</span>
+    <span class="s1">titulo</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">pady</span><span class="s2">=(</span><span class="s5">30</span><span class="s2">, </span><span class="s5">20</span><span class="s2">))</span>
+
+    <span class="s3"># Formulario contenedor</span>
+    <span class="s1">form_frame </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Frame</span><span class="s2">(</span><span class="s1">frame_contenido</span><span class="s2">, </span><span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_CARD_BG</span><span class="s2">, </span><span class="s1">bd</span><span class="s2">=</span><span class="s5">1</span><span class="s2">, </span><span class="s1">relief</span><span class="s2">=</span><span class="s4">&quot;solid&quot;</span><span class="s2">, </span><span class="s1">highlightthickness</span><span class="s2">=</span><span class="s5">0</span><span class="s2">)</span>
+    <span class="s1">form_frame</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">padx</span><span class="s2">=</span><span class="s5">60</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=</span><span class="s5">10</span><span class="s2">, </span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;x&quot;</span><span class="s2">)</span>
+
+    <span class="s0">def </span><span class="s1">crear_campo</span><span class="s2">(</span><span class="s1">parent</span><span class="s2">, </span><span class="s1">texto</span><span class="s2">):</span>
+        <span class="s1">label </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span><span class="s1">parent</span><span class="s2">, </span><span class="s1">text</span><span class="s2">=</span><span class="s1">texto</span><span class="s2">, </span><span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BOLD</span><span class="s2">, </span><span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_CARD_BG</span><span class="s2">, </span><span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_TEXT</span><span class="s2">)</span>
+        <span class="s1">label</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">anchor</span><span class="s2">=</span><span class="s4">&quot;w&quot;</span><span class="s2">, </span><span class="s1">padx</span><span class="s2">=</span><span class="s5">25</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=(</span><span class="s5">12</span><span class="s2">, </span><span class="s5">2</span><span class="s2">))</span>
+        <span class="s1">entry </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Entry</span><span class="s2">(</span><span class="s1">parent</span><span class="s2">, </span><span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BODY</span><span class="s2">, </span><span class="s1">bd</span><span class="s2">=</span><span class="s5">1</span><span class="s2">, </span><span class="s1">relief</span><span class="s2">=</span><span class="s4">&quot;solid&quot;</span><span class="s2">)</span>
+        <span class="s1">entry</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;x&quot;</span><span class="s2">, </span><span class="s1">padx</span><span class="s2">=</span><span class="s5">25</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=(</span><span class="s5">0</span><span class="s2">, </span><span class="s5">5</span><span class="s2">), </span><span class="s1">ipady</span><span class="s2">=</span><span class="s5">4</span><span class="s2">)</span>
+        <span class="s0">return </span><span class="s1">entry</span>
+
+    <span class="s0">global </span><span class="s1">entrada_nombre</span><span class="s2">, </span><span class="s1">combo_tipo</span><span class="s2">, </span><span class="s1">entrada_raza</span><span class="s2">, </span><span class="s1">entrada_edad</span><span class="s2">, </span><span class="s1">entrada_peso</span><span class="s2">, </span><span class="s1">entrada_observaciones</span>
+
+    <span class="s1">entrada_nombre </span><span class="s2">= </span><span class="s1">crear_campo</span><span class="s2">(</span><span class="s1">form_frame</span><span class="s2">, </span><span class="s4">&quot;Nombre de la mascota:&quot;</span><span class="s2">)</span>
+
+    <span class="s3"># Combo Tipo</span>
+    <span class="s1">lbl_tipo </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span><span class="s1">form_frame</span><span class="s2">, </span><span class="s1">text</span><span class="s2">=</span><span class="s4">&quot;Tipo de mascota:&quot;</span><span class="s2">, </span><span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BOLD</span><span class="s2">, </span><span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_CARD_BG</span><span class="s2">, </span><span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_TEXT</span><span class="s2">)</span>
+    <span class="s1">lbl_tipo</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">anchor</span><span class="s2">=</span><span class="s4">&quot;w&quot;</span><span class="s2">, </span><span class="s1">padx</span><span class="s2">=</span><span class="s5">25</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=(</span><span class="s5">12</span><span class="s2">, </span><span class="s5">2</span><span class="s2">))</span>
+    <span class="s1">combo_tipo </span><span class="s2">= </span><span class="s1">ttk</span><span class="s2">.</span><span class="s1">Combobox</span><span class="s2">(</span>
+        <span class="s1">form_frame</span><span class="s2">,</span>
+        <span class="s1">values</span><span class="s2">=[</span><span class="s4">&quot;Perro 🐶&quot;</span><span class="s2">, </span><span class="s4">&quot;Gato 🐱&quot;</span><span class="s2">, </span><span class="s4">&quot;Ave 🦜&quot;</span><span class="s2">, </span><span class="s4">&quot;Conejo 🐰&quot;</span><span class="s2">, </span><span class="s4">&quot;Otro 🐾&quot;</span><span class="s2">],</span>
+        <span class="s1">state</span><span class="s2">=</span><span class="s4">&quot;readonly&quot;</span><span class="s2">,</span>
+        <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BODY</span>
+    <span class="s2">)</span>
+    <span class="s1">combo_tipo</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;x&quot;</span><span class="s2">, </span><span class="s1">padx</span><span class="s2">=</span><span class="s5">25</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=(</span><span class="s5">0</span><span class="s2">, </span><span class="s5">5</span><span class="s2">), </span><span class="s1">ipady</span><span class="s2">=</span><span class="s5">2</span><span class="s2">)</span>
+
+    <span class="s1">entrada_raza </span><span class="s2">= </span><span class="s1">crear_campo</span><span class="s2">(</span><span class="s1">form_frame</span><span class="s2">, </span><span class="s4">&quot;Raza:&quot;</span><span class="s2">)</span>
+    <span class="s1">entrada_edad </span><span class="s2">= </span><span class="s1">crear_campo</span><span class="s2">(</span><span class="s1">form_frame</span><span class="s2">, </span><span class="s4">&quot;Edad (años):&quot;</span><span class="s2">)</span>
+    <span class="s1">entrada_peso </span><span class="s2">= </span><span class="s1">crear_campo</span><span class="s2">(</span><span class="s1">form_frame</span><span class="s2">, </span><span class="s4">&quot;Peso (kg):&quot;</span><span class="s2">)</span>
+
+    <span class="s3"># Observaciones</span>
+    <span class="s1">lbl_obs </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span><span class="s1">form_frame</span><span class="s2">, </span><span class="s1">text</span><span class="s2">=</span><span class="s4">&quot;Observaciones:&quot;</span><span class="s2">, </span><span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BOLD</span><span class="s2">, </span><span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_CARD_BG</span><span class="s2">, </span><span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_TEXT</span><span class="s2">)</span>
+    <span class="s1">lbl_obs</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">anchor</span><span class="s2">=</span><span class="s4">&quot;w&quot;</span><span class="s2">, </span><span class="s1">padx</span><span class="s2">=</span><span class="s5">25</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=(</span><span class="s5">12</span><span class="s2">, </span><span class="s5">2</span><span class="s2">))</span>
+    <span class="s1">entrada_observaciones </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Text</span><span class="s2">(</span><span class="s1">form_frame</span><span class="s2">, </span><span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BODY</span><span class="s2">, </span><span class="s1">height</span><span class="s2">=</span><span class="s5">3</span><span class="s2">, </span><span class="s1">bd</span><span class="s2">=</span><span class="s5">1</span><span class="s2">, </span><span class="s1">relief</span><span class="s2">=</span><span class="s4">&quot;solid&quot;</span><span class="s2">)</span>
+    <span class="s1">entrada_observaciones</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;x&quot;</span><span class="s2">, </span><span class="s1">padx</span><span class="s2">=</span><span class="s5">25</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=(</span><span class="s5">0</span><span class="s2">, </span><span class="s5">20</span><span class="s2">))</span>
+
+    <span class="s3"># Botón de Guardado</span>
+    <span class="s1">btn_registrar </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Button</span><span class="s2">(</span>
+        <span class="s1">form_frame</span><span class="s2">,</span>
+        <span class="s1">text</span><span class="s2">=</span><span class="s4">&quot;💾 Guardar Mascota&quot;</span><span class="s2">,</span>
+        <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BOLD</span><span class="s2">,</span>
+        <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_PRIMARY</span><span class="s2">,</span>
+        <span class="s1">fg</span><span class="s2">=</span><span class="s4">&quot;white&quot;</span><span class="s2">,</span>
+        <span class="s1">activebackground</span><span class="s2">=</span><span class="s1">COLOR_PRIMARY_HOVER</span><span class="s2">,</span>
+        <span class="s1">activeforeground</span><span class="s2">=</span><span class="s4">&quot;white&quot;</span><span class="s2">,</span>
+        <span class="s1">bd</span><span class="s2">=</span><span class="s5">0</span><span class="s2">,</span>
+        <span class="s1">cursor</span><span class="s2">=</span><span class="s4">&quot;hand2&quot;</span><span class="s2">,</span>
+        <span class="s1">command</span><span class="s2">=</span><span class="s1">registrar_mascota</span><span class="s2">,</span>
+        <span class="s1">pady</span><span class="s2">=</span><span class="s5">8</span>
+    <span class="s2">)</span>
+    <span class="s1">btn_registrar</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;x&quot;</span><span class="s2">, </span><span class="s1">padx</span><span class="s2">=</span><span class="s5">25</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=(</span><span class="s5">0</span><span class="s2">, </span><span class="s5">25</span><span class="s2">))</span>
+
+
+
+<span class="s3"># MOSTRAR LISTA DE MASCOTAS</span>
+<span class="s0">def </span><span class="s1">mostrar_lista_mascotas</span><span class="s2">():</span>
+    <span class="s1">limpiar_contenido</span><span class="s2">()</span>
+
+    <span class="s1">mascotas_usuario </span><span class="s2">= </span><span class="s1">obtener_mascotas_usuario</span><span class="s2">(</span><span class="s1">usuario_actual</span><span class="s2">[</span><span class="s4">&quot;id_usuario&quot;</span><span class="s2">])</span>
+
+    <span class="s3"># CONDICION DE SI NO HAY MASCOTAS</span>
+
+    <span class="s0">if not </span><span class="s1">mascotas_usuario</span><span class="s2">:</span>
+        <span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span>
+            <span class="s1">frame_contenido</span><span class="s2">,</span>
+            <span class="s1">text</span><span class="s2">=</span><span class="s4">&quot;🐶 ¡Bienvenido!&quot;</span><span class="s2">,</span>
+            <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_TITLE</span><span class="s2">,</span>
+            <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_BG_MAIN</span><span class="s2">,</span>
+            <span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_TEXT</span>
+        <span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">pady</span><span class="s2">=(</span><span class="s5">100</span><span class="s2">, </span><span class="s5">10</span><span class="s2">))</span>
+
+        <span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span>
+            <span class="s1">frame_contenido</span><span class="s2">,</span>
+            <span class="s1">text</span><span class="s2">=</span><span class="s4">&quot;Todavía no has registrado ninguna mascota.&quot;</span><span class="s2">,</span>
+            <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BODY</span><span class="s2">,</span>
+            <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_BG_MAIN</span><span class="s2">,</span>
+            <span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_MUTED</span>
+        <span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">pady</span><span class="s2">=</span><span class="s5">5</span><span class="s2">)</span>
+
+        <span class="s1">tk</span><span class="s2">.</span><span class="s1">Button</span><span class="s2">(</span>
+            <span class="s1">frame_contenido</span><span class="s2">,</span>
+            <span class="s1">text</span><span class="s2">=</span><span class="s4">&quot;➕ Registrar Mascota&quot;</span><span class="s2">,</span>
+            <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BOLD</span><span class="s2">,</span>
+            <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_PRIMARY</span><span class="s2">,</span>
+            <span class="s1">fg</span><span class="s2">=</span><span class="s4">&quot;white&quot;</span><span class="s2">,</span>
+            <span class="s1">activebackground</span><span class="s2">=</span><span class="s1">COLOR_PRIMARY_HOVER</span><span class="s2">,</span>
+            <span class="s1">activeforeground</span><span class="s2">=</span><span class="s4">&quot;white&quot;</span><span class="s2">,</span>
+            <span class="s1">bd</span><span class="s2">=</span><span class="s5">0</span><span class="s2">,</span>
+            <span class="s1">cursor</span><span class="s2">=</span><span class="s4">&quot;hand2&quot;</span><span class="s2">,</span>
+            <span class="s1">padx</span><span class="s2">=</span><span class="s5">20</span><span class="s2">,</span>
+            <span class="s1">pady</span><span class="s2">=</span><span class="s5">10</span><span class="s2">,</span>
+            <span class="s1">command</span><span class="s2">=</span><span class="s1">mostrar_formulario</span>
+        <span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">pady</span><span class="s2">=</span><span class="s5">25</span><span class="s2">)</span>
+        <span class="s0">return</span>
+
+    <span class="s3"># INFO MASCOTAS</span>
+    <span class="s1">header_frame </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Frame</span><span class="s2">(</span><span class="s1">frame_contenido</span><span class="s2">, </span><span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_BG_MAIN</span><span class="s2">)</span>
+    <span class="s1">header_frame</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;x&quot;</span><span class="s2">, </span><span class="s1">padx</span><span class="s2">=</span><span class="s5">40</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=(</span><span class="s5">30</span><span class="s2">, </span><span class="s5">10</span><span class="s2">))</span>
+
+    <span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span>
+        <span class="s1">header_frame</span><span class="s2">,</span>
+        <span class="s1">text</span><span class="s2">=</span><span class="s4">&quot;🐾 Mis Mascotas&quot;</span><span class="s2">,</span>
+        <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_TITLE</span><span class="s2">,</span>
+        <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_BG_MAIN</span><span class="s2">,</span>
+        <span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_TEXT</span>
+    <span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">side</span><span class="s2">=</span><span class="s4">&quot;left&quot;</span><span class="s2">)</span>
+
+    <span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span>
+        <span class="s1">header_frame</span><span class="s2">,</span>
+        <span class="s1">text</span><span class="s2">=</span><span class="s4">f&quot;Total: </span><span class="s0">{</span><span class="s1">len</span><span class="s2">(</span><span class="s1">mascotas_usuario</span><span class="s2">)</span><span class="s0">}</span><span class="s4">&quot;</span><span class="s2">,</span>
+        <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_SUBTITLE</span><span class="s2">,</span>
+        <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_BG_MAIN</span><span class="s2">,</span>
+        <span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_MUTED</span>
+    <span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">side</span><span class="s2">=</span><span class="s4">&quot;right&quot;</span><span class="s2">)</span>
+
+    <span class="s1">frame_lista </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Frame</span><span class="s2">(</span><span class="s1">frame_contenido</span><span class="s2">, </span><span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_BG_MAIN</span><span class="s2">)</span>
+    <span class="s1">frame_lista</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;both&quot;</span><span class="s2">, </span><span class="s1">expand</span><span class="s2">=</span><span class="s0">True</span><span class="s2">, </span><span class="s1">padx</span><span class="s2">=</span><span class="s5">40</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=</span><span class="s5">10</span><span class="s2">)</span>
+
+    <span class="s0">for </span><span class="s1">m </span><span class="s0">in </span><span class="s1">mascotas_usuario</span><span class="s2">:</span>
+        <span class="s1">card </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Frame</span><span class="s2">(</span>
+            <span class="s1">frame_lista</span><span class="s2">,</span>
+            <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_CARD_BG</span><span class="s2">,</span>
+            <span class="s1">bd</span><span class="s2">=</span><span class="s5">1</span><span class="s2">,</span>
+            <span class="s1">relief</span><span class="s2">=</span><span class="s4">&quot;solid&quot;</span><span class="s2">,</span>
+            <span class="s1">padx</span><span class="s2">=</span><span class="s5">20</span><span class="s2">,</span>
+            <span class="s1">pady</span><span class="s2">=</span><span class="s5">15</span>
+        <span class="s2">)</span>
+        <span class="s1">card</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;x&quot;</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=</span><span class="s5">8</span><span class="s2">)</span>
+
+        <span class="s3"># Información izquierda</span>
+        <span class="s1">info_frame </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Frame</span><span class="s2">(</span><span class="s1">card</span><span class="s2">, </span><span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_CARD_BG</span><span class="s2">)</span>
+        <span class="s1">info_frame</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">side</span><span class="s2">=</span><span class="s4">&quot;left&quot;</span><span class="s2">, </span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;both&quot;</span><span class="s2">)</span>
+
+        <span class="s1">lbl_nombre </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span>
+            <span class="s1">info_frame</span><span class="s2">,</span>
+            <span class="s1">text</span><span class="s2">=</span><span class="s4">f&quot;❤️ </span><span class="s0">{</span><span class="s1">m</span><span class="s2">[</span><span class="s4">'nombre'</span><span class="s2">]</span><span class="s0">}</span><span class="s4">&quot;</span><span class="s2">,</span>
+            <span class="s1">font</span><span class="s2">=(</span><span class="s4">&quot;Segoe UI&quot;</span><span class="s2">, </span><span class="s5">14</span><span class="s2">, </span><span class="s4">&quot;bold&quot;</span><span class="s2">),</span>
+            <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_CARD_BG</span><span class="s2">,</span>
+            <span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_TEXT</span>
+        <span class="s2">)</span>
+        <span class="s1">lbl_nombre</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">anchor</span><span class="s2">=</span><span class="s4">&quot;w&quot;</span><span class="s2">)</span>
+
+        <span class="s1">lbl_detalles </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span>
+            <span class="s1">info_frame</span><span class="s2">,</span>
+            <span class="s1">text</span><span class="s2">=</span><span class="s4">f&quot;📌 </span><span class="s0">{</span><span class="s1">m</span><span class="s2">[</span><span class="s4">'tipo'</span><span class="s2">]</span><span class="s0">} </span><span class="s4">(</span><span class="s0">{</span><span class="s1">m</span><span class="s2">[</span><span class="s4">'raza'</span><span class="s2">]</span><span class="s0">}</span><span class="s4">)   •   ⏳ </span><span class="s0">{</span><span class="s1">m</span><span class="s2">[</span><span class="s4">'edad'</span><span class="s2">]</span><span class="s0">} </span><span class="s4">años   •   ⚖️ </span><span class="s0">{</span><span class="s1">m</span><span class="s2">[</span><span class="s4">'peso'</span><span class="s2">]</span><span class="s0">} </span><span class="s4">kg&quot;</span><span class="s2">,</span>
+            <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BODY</span><span class="s2">,</span>
+            <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_CARD_BG</span><span class="s2">,</span>
+            <span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_MUTED</span>
+        <span class="s2">)</span>
+        <span class="s1">lbl_detalles</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">anchor</span><span class="s2">=</span><span class="s4">&quot;w&quot;</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=(</span><span class="s5">4</span><span class="s2">, </span><span class="s5">0</span><span class="s2">))</span>
+
+        <span class="s3"># Botón Perfil</span>
+        <span class="s1">tk</span><span class="s2">.</span><span class="s1">Button</span><span class="s2">(</span>
+            <span class="s1">card</span><span class="s2">,</span>
+            <span class="s1">text</span><span class="s2">=</span><span class="s4">&quot;Ver Perfil ➔&quot;</span><span class="s2">,</span>
+            <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BOLD</span><span class="s2">,</span>
+            <span class="s1">bg</span><span class="s2">=</span><span class="s4">&quot;#EFF6FF&quot;</span><span class="s2">,</span>
+            <span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_PRIMARY</span><span class="s2">,</span>
+            <span class="s1">activebackground</span><span class="s2">=</span><span class="s4">&quot;#DBEAFE&quot;</span><span class="s2">,</span>
+            <span class="s1">activeforeground</span><span class="s2">=</span><span class="s1">COLOR_PRIMARY</span><span class="s2">,</span>
+            <span class="s1">bd</span><span class="s2">=</span><span class="s5">0</span><span class="s2">,</span>
+            <span class="s1">cursor</span><span class="s2">=</span><span class="s4">&quot;hand2&quot;</span><span class="s2">,</span>
+            <span class="s1">padx</span><span class="s2">=</span><span class="s5">12</span><span class="s2">,</span>
+            <span class="s1">pady</span><span class="s2">=</span><span class="s5">6</span><span class="s2">,</span>
+            <span class="s1">command</span><span class="s2">=</span><span class="s0">lambda </span><span class="s1">id_mascota</span><span class="s2">=</span><span class="s1">m</span><span class="s2">[</span><span class="s4">&quot;id_mascota&quot;</span><span class="s2">]: </span><span class="s1">mostrar_perfil</span><span class="s2">(</span><span class="s1">id_mascota</span><span class="s2">)</span>
+        <span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">side</span><span class="s2">=</span><span class="s4">&quot;right&quot;</span><span class="s2">)</span>
+
+    <span class="s3"># Botón de agregado</span>
+    <span class="s1">tk</span><span class="s2">.</span><span class="s1">Button</span><span class="s2">(</span>
+        <span class="s1">frame_contenido</span><span class="s2">,</span>
+        <span class="s1">text</span><span class="s2">=</span><span class="s4">&quot;➕ Registrar Nueva Mascota&quot;</span><span class="s2">,</span>
+        <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BOLD</span><span class="s2">,</span>
+        <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_PRIMARY</span><span class="s2">,</span>
+        <span class="s1">fg</span><span class="s2">=</span><span class="s4">&quot;white&quot;</span><span class="s2">,</span>
+        <span class="s1">activebackground</span><span class="s2">=</span><span class="s1">COLOR_PRIMARY_HOVER</span><span class="s2">,</span>
+        <span class="s1">activeforeground</span><span class="s2">=</span><span class="s4">&quot;white&quot;</span><span class="s2">,</span>
+        <span class="s1">bd</span><span class="s2">=</span><span class="s5">0</span><span class="s2">,</span>
+        <span class="s1">cursor</span><span class="s2">=</span><span class="s4">&quot;hand2&quot;</span><span class="s2">,</span>
+        <span class="s1">padx</span><span class="s2">=</span><span class="s5">20</span><span class="s2">,</span>
+        <span class="s1">pady</span><span class="s2">=</span><span class="s5">10</span><span class="s2">,</span>
+        <span class="s1">command</span><span class="s2">=</span><span class="s1">mostrar_formulario</span>
+    <span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">pady</span><span class="s2">=</span><span class="s5">20</span><span class="s2">)</span>
+
+
+
+<span class="s3"># PERFIL DE MASCOTA</span>
+<span class="s0">def </span><span class="s1">mostrar_perfil</span><span class="s2">(</span><span class="s1">id_mascota</span><span class="s2">):</span>
+    <span class="s1">mascota </span><span class="s2">= </span><span class="s1">obtener_mascota_por_id</span><span class="s2">(</span><span class="s1">id_mascota</span><span class="s2">)</span>
+
+    <span class="s0">if </span><span class="s1">mascota </span><span class="s0">is None</span><span class="s2">:</span>
+        <span class="s1">messagebox</span><span class="s2">.</span><span class="s1">showerror</span><span class="s2">(</span><span class="s4">&quot;Error&quot;</span><span class="s2">, </span><span class="s4">&quot;No se encontró la mascota.&quot;</span><span class="s2">)</span>
+        <span class="s0">return</span>
+
+    <span class="s1">limpiar_contenido</span><span class="s2">()</span>
+
+    <span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span>
+        <span class="s1">frame_contenido</span><span class="s2">,</span>
+        <span class="s1">text</span><span class="s2">=</span><span class="s4">f&quot;📋 Perfil de </span><span class="s0">{</span><span class="s1">mascota</span><span class="s2">[</span><span class="s4">'nombre'</span><span class="s2">]</span><span class="s0">}</span><span class="s4">&quot;</span><span class="s2">,</span>
+        <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_TITLE</span><span class="s2">,</span>
+        <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_BG_MAIN</span><span class="s2">,</span>
+        <span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_TEXT</span>
+    <span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">pady</span><span class="s2">=(</span><span class="s5">40</span><span class="s2">, </span><span class="s5">20</span><span class="s2">))</span>
+
+    <span class="s1">card </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Frame</span><span class="s2">(</span>
+        <span class="s1">frame_contenido</span><span class="s2">,</span>
+        <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_CARD_BG</span><span class="s2">,</span>
+        <span class="s1">bd</span><span class="s2">=</span><span class="s5">1</span><span class="s2">,</span>
+        <span class="s1">relief</span><span class="s2">=</span><span class="s4">&quot;solid&quot;</span><span class="s2">,</span>
+        <span class="s1">padx</span><span class="s2">=</span><span class="s5">30</span><span class="s2">,</span>
+        <span class="s1">pady</span><span class="s2">=</span><span class="s5">25</span>
+    <span class="s2">)</span>
+    <span class="s1">card</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">padx</span><span class="s2">=</span><span class="s5">80</span><span class="s2">, </span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;x&quot;</span><span class="s2">)</span>
+
+    <span class="s0">def </span><span class="s1">fila_info</span><span class="s2">(</span><span class="s1">parent</span><span class="s2">, </span><span class="s1">etiqueta</span><span class="s2">, </span><span class="s1">valor</span><span class="s2">):</span>
+        <span class="s1">f </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Frame</span><span class="s2">(</span><span class="s1">parent</span><span class="s2">, </span><span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_CARD_BG</span><span class="s2">)</span>
+        <span class="s1">f</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;x&quot;</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=</span><span class="s5">6</span><span class="s2">)</span>
+        <span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span><span class="s1">f</span><span class="s2">, </span><span class="s1">text</span><span class="s2">=</span><span class="s1">etiqueta</span><span class="s2">, </span><span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BOLD</span><span class="s2">, </span><span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_CARD_BG</span><span class="s2">, </span><span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_MUTED</span><span class="s2">, </span><span class="s1">width</span><span class="s2">=</span><span class="s5">15</span><span class="s2">, </span><span class="s1">anchor</span><span class="s2">=</span><span class="s4">&quot;w&quot;</span><span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">side</span><span class="s2">=</span><span class="s4">&quot;left&quot;</span><span class="s2">)</span>
+        <span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span><span class="s1">f</span><span class="s2">, </span><span class="s1">text</span><span class="s2">=</span><span class="s1">valor</span><span class="s2">, </span><span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BODY</span><span class="s2">, </span><span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_CARD_BG</span><span class="s2">, </span><span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_TEXT</span><span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">side</span><span class="s2">=</span><span class="s4">&quot;left&quot;</span><span class="s2">)</span>
+
+    <span class="s1">fila_info</span><span class="s2">(</span><span class="s1">card</span><span class="s2">, </span><span class="s4">&quot;Nombre:&quot;</span><span class="s2">, </span><span class="s1">mascota</span><span class="s2">[</span><span class="s4">'nombre'</span><span class="s2">])</span>
+    <span class="s1">fila_info</span><span class="s2">(</span><span class="s1">card</span><span class="s2">, </span><span class="s4">&quot;Tipo:&quot;</span><span class="s2">, </span><span class="s1">mascota</span><span class="s2">[</span><span class="s4">'tipo'</span><span class="s2">])</span>
+    <span class="s1">fila_info</span><span class="s2">(</span><span class="s1">card</span><span class="s2">, </span><span class="s4">&quot;Raza:&quot;</span><span class="s2">, </span><span class="s1">mascota</span><span class="s2">[</span><span class="s4">'raza'</span><span class="s2">])</span>
+    <span class="s1">fila_info</span><span class="s2">(</span><span class="s1">card</span><span class="s2">, </span><span class="s4">&quot;Edad:&quot;</span><span class="s2">, </span><span class="s4">f&quot;</span><span class="s0">{</span><span class="s1">mascota</span><span class="s2">[</span><span class="s4">'edad'</span><span class="s2">]</span><span class="s0">} </span><span class="s4">años&quot;</span><span class="s2">)</span>
+    <span class="s1">fila_info</span><span class="s2">(</span><span class="s1">card</span><span class="s2">, </span><span class="s4">&quot;Peso:&quot;</span><span class="s2">, </span><span class="s4">f&quot;</span><span class="s0">{</span><span class="s1">mascota</span><span class="s2">[</span><span class="s4">'peso'</span><span class="s2">]</span><span class="s0">} </span><span class="s4">kg&quot;</span><span class="s2">)</span>
+
+    <span class="s1">tk</span><span class="s2">.</span><span class="s1">Frame</span><span class="s2">(</span><span class="s1">card</span><span class="s2">, </span><span class="s1">bg</span><span class="s2">=</span><span class="s4">&quot;#E2E8F0&quot;</span><span class="s2">, </span><span class="s1">height</span><span class="s2">=</span><span class="s5">1</span><span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;x&quot;</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=</span><span class="s5">15</span><span class="s2">)</span>
+
+    <span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span><span class="s1">card</span><span class="s2">, </span><span class="s1">text</span><span class="s2">=</span><span class="s4">&quot;Observaciones:&quot;</span><span class="s2">, </span><span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BOLD</span><span class="s2">, </span><span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_CARD_BG</span><span class="s2">, </span><span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_MUTED</span><span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">anchor</span><span class="s2">=</span><span class="s4">&quot;w&quot;</span><span class="s2">)</span>
+    <span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span>
+        <span class="s1">card</span><span class="s2">,</span>
+        <span class="s1">text</span><span class="s2">=</span><span class="s1">mascota</span><span class="s2">[</span><span class="s4">'observaciones'</span><span class="s2">] </span><span class="s0">or </span><span class="s4">&quot;Sin observaciones registradas.&quot;</span><span class="s2">,</span>
+        <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BODY</span><span class="s2">,</span>
+        <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_CARD_BG</span><span class="s2">,</span>
+        <span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_TEXT</span><span class="s2">,</span>
+        <span class="s1">wraplength</span><span class="s2">=</span><span class="s5">450</span><span class="s2">,</span>
+        <span class="s1">justify</span><span class="s2">=</span><span class="s4">&quot;left&quot;</span>
+    <span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">anchor</span><span class="s2">=</span><span class="s4">&quot;w&quot;</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=(</span><span class="s5">5</span><span class="s2">, </span><span class="s5">0</span><span class="s2">))</span>
+
+    <span class="s1">tk</span><span class="s2">.</span><span class="s1">Button</span><span class="s2">(</span>
+        <span class="s1">frame_contenido</span><span class="s2">,</span>
+        <span class="s1">text</span><span class="s2">=</span><span class="s4">&quot;⬅️ Volver a mis mascotas&quot;</span><span class="s2">,</span>
+        <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BOLD</span><span class="s2">,</span>
+        <span class="s1">bg</span><span class="s2">=</span><span class="s4">&quot;#E2E8F0&quot;</span><span class="s2">,</span>
+        <span class="s1">fg</span><span class="s2">=</span><span class="s1">COLOR_TEXT</span><span class="s2">,</span>
+        <span class="s1">activebackground</span><span class="s2">=</span><span class="s4">&quot;#CBD5E1&quot;</span><span class="s2">,</span>
+        <span class="s1">bd</span><span class="s2">=</span><span class="s5">0</span><span class="s2">,</span>
+        <span class="s1">cursor</span><span class="s2">=</span><span class="s4">&quot;hand2&quot;</span><span class="s2">,</span>
+        <span class="s1">padx</span><span class="s2">=</span><span class="s5">15</span><span class="s2">,</span>
+        <span class="s1">pady</span><span class="s2">=</span><span class="s5">8</span><span class="s2">,</span>
+        <span class="s1">command</span><span class="s2">=</span><span class="s1">mostrar_lista_mascotas</span>
+    <span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">pady</span><span class="s2">=</span><span class="s5">25</span><span class="s2">)</span>
+
+
+
+<span class="s3"># Para limpiar contenido</span>
+<span class="s0">def </span><span class="s1">limpiar_contenido</span><span class="s2">():</span>
+    <span class="s0">for </span><span class="s1">widget </span><span class="s0">in </span><span class="s1">frame_contenido</span><span class="s2">.</span><span class="s1">winfo_children</span><span class="s2">():</span>
+        <span class="s1">widget</span><span class="s2">.</span><span class="s1">destroy</span><span class="s2">()</span>
+
+
+<span class="s3"># VENTANA PRINCIPAL</span>
+<span class="s1">ventana </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Tk</span><span class="s2">()</span>
+<span class="s1">ventana</span><span class="s2">.</span><span class="s1">title</span><span class="s2">(</span><span class="s4">&quot;Sistema de Gestión de Mascotas&quot;</span><span class="s2">)</span>
+<span class="s1">ventana</span><span class="s2">.</span><span class="s1">geometry</span><span class="s2">(</span><span class="s4">&quot;850x680&quot;</span><span class="s2">)</span>
+<span class="s1">ventana</span><span class="s2">.</span><span class="s1">configure</span><span class="s2">(</span><span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_BG_MAIN</span><span class="s2">)</span>
+
+<span class="s3"># MENÚ LATERAL (SIDEBAR)</span>
+<span class="s1">frame_menu </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Frame</span><span class="s2">(</span><span class="s1">ventana</span><span class="s2">, </span><span class="s1">width</span><span class="s2">=</span><span class="s5">220</span><span class="s2">, </span><span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_SIDEBAR</span><span class="s2">)</span>
+<span class="s1">frame_menu</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">side</span><span class="s2">=</span><span class="s4">&quot;left&quot;</span><span class="s2">, </span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;y&quot;</span><span class="s2">)</span>
+<span class="s1">frame_menu</span><span class="s2">.</span><span class="s1">pack_propagate</span><span class="s2">(</span><span class="s0">False</span><span class="s2">)</span>
+
+<span class="s3"># Título Sidebar</span>
+<span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span>
+    <span class="s1">frame_menu</span><span class="s2">,</span>
+    <span class="s1">text</span><span class="s2">=</span><span class="s4">&quot;VETERINARIA&quot;</span><span class="s2">,</span>
+    <span class="s1">font</span><span class="s2">=(</span><span class="s4">&quot;Segoe UI&quot;</span><span class="s2">, </span><span class="s5">18</span><span class="s2">, </span><span class="s4">&quot;bold&quot;</span><span class="s2">),</span>
+    <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_SIDEBAR</span><span class="s2">,</span>
+    <span class="s1">fg</span><span class="s2">=</span><span class="s4">&quot;white&quot;</span>
+<span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">pady</span><span class="s2">=(</span><span class="s5">40</span><span class="s2">, </span><span class="s5">5</span><span class="s2">))</span>
+
+<span class="s1">tk</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">(</span>
+    <span class="s1">frame_menu</span><span class="s2">,</span>
+    <span class="s1">text</span><span class="s2">=</span><span class="s4">f&quot;Hola, </span><span class="s0">{</span><span class="s1">usuario_actual</span><span class="s2">[</span><span class="s4">'nombre'</span><span class="s2">]</span><span class="s0">} </span><span class="s4">👋&quot;</span><span class="s2">,</span>
+    <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BODY</span><span class="s2">,</span>
+    <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_SIDEBAR</span><span class="s2">,</span>
+    <span class="s1">fg</span><span class="s2">=</span><span class="s4">&quot;#94A3B8&quot;</span>
+<span class="s2">).</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">pady</span><span class="s2">=(</span><span class="s5">0</span><span class="s2">, </span><span class="s5">30</span><span class="s2">))</span>
+
+<span class="s3"># Botones de navegación</span>
+<span class="s1">btn_mis_mascotas </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Button</span><span class="s2">(</span>
+    <span class="s1">frame_menu</span><span class="s2">,</span>
+    <span class="s1">text</span><span class="s2">=</span><span class="s4">&quot;🐾  Mis Mascotas&quot;</span><span class="s2">,</span>
+    <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BOLD</span><span class="s2">,</span>
+    <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_SIDEBAR</span><span class="s2">,</span>
+    <span class="s1">fg</span><span class="s2">=</span><span class="s4">&quot;white&quot;</span><span class="s2">,</span>
+    <span class="s1">activebackground</span><span class="s2">=</span><span class="s4">&quot;#334155&quot;</span><span class="s2">,</span>
+    <span class="s1">activeforeground</span><span class="s2">=</span><span class="s4">&quot;white&quot;</span><span class="s2">,</span>
+    <span class="s1">bd</span><span class="s2">=</span><span class="s5">0</span><span class="s2">,</span>
+    <span class="s1">anchor</span><span class="s2">=</span><span class="s4">&quot;w&quot;</span><span class="s2">,</span>
+    <span class="s1">padx</span><span class="s2">=</span><span class="s5">25</span><span class="s2">,</span>
+    <span class="s1">cursor</span><span class="s2">=</span><span class="s4">&quot;hand2&quot;</span><span class="s2">,</span>
+    <span class="s1">command</span><span class="s2">=</span><span class="s1">mostrar_lista_mascotas</span>
+<span class="s2">)</span>
+<span class="s1">btn_mis_mascotas</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;x&quot;</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=</span><span class="s5">5</span><span class="s2">, </span><span class="s1">ipady</span><span class="s2">=</span><span class="s5">8</span><span class="s2">)</span>
+
+<span class="s1">btn_agregar </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Button</span><span class="s2">(</span>
+    <span class="s1">frame_menu</span><span class="s2">,</span>
+    <span class="s1">text</span><span class="s2">=</span><span class="s4">&quot;➕  Agregar Mascota&quot;</span><span class="s2">,</span>
+    <span class="s1">font</span><span class="s2">=</span><span class="s1">FONT_BOLD</span><span class="s2">,</span>
+    <span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_SIDEBAR</span><span class="s2">,</span>
+    <span class="s1">fg</span><span class="s2">=</span><span class="s4">&quot;white&quot;</span><span class="s2">,</span>
+    <span class="s1">activebackground</span><span class="s2">=</span><span class="s4">&quot;#334155&quot;</span><span class="s2">,</span>
+    <span class="s1">activeforeground</span><span class="s2">=</span><span class="s4">&quot;white&quot;</span><span class="s2">,</span>
+    <span class="s1">bd</span><span class="s2">=</span><span class="s5">0</span><span class="s2">,</span>
+    <span class="s1">anchor</span><span class="s2">=</span><span class="s4">&quot;w&quot;</span><span class="s2">,</span>
+    <span class="s1">padx</span><span class="s2">=</span><span class="s5">25</span><span class="s2">,</span>
+    <span class="s1">cursor</span><span class="s2">=</span><span class="s4">&quot;hand2&quot;</span><span class="s2">,</span>
+    <span class="s1">command</span><span class="s2">=</span><span class="s1">mostrar_formulario</span>
+<span class="s2">)</span>
+<span class="s1">btn_agregar</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;x&quot;</span><span class="s2">, </span><span class="s1">pady</span><span class="s2">=</span><span class="s5">5</span><span class="s2">, </span><span class="s1">ipady</span><span class="s2">=</span><span class="s5">8</span><span class="s2">)</span>
+
+
+
+<span class="s3"># CONTENIDO PRINCIPAL</span>
+
+<span class="s1">frame_contenido </span><span class="s2">= </span><span class="s1">tk</span><span class="s2">.</span><span class="s1">Frame</span><span class="s2">(</span><span class="s1">ventana</span><span class="s2">, </span><span class="s1">bg</span><span class="s2">=</span><span class="s1">COLOR_BG_MAIN</span><span class="s2">)</span>
+<span class="s1">frame_contenido</span><span class="s2">.</span><span class="s1">pack</span><span class="s2">(</span><span class="s1">side</span><span class="s2">=</span><span class="s4">&quot;right&quot;</span><span class="s2">, </span><span class="s1">fill</span><span class="s2">=</span><span class="s4">&quot;both&quot;</span><span class="s2">, </span><span class="s1">expand</span><span class="s2">=</span><span class="s0">True</span><span class="s2">)</span>
+
+
+<span class="s3"># ACTIVAR INICIO</span>
+
+<span class="s1">mostrar_lista_mascotas</span><span class="s2">()</span>
+
+<span class="s1">ventana</span><span class="s2">.</span><span class="s1">mainloop</span><span class="s2">()</span>
+
+
+</pre>
+</body>
+</html>
