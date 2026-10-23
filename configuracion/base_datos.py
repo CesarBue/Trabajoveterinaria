@@ -1,8 +1,10 @@
 import sqlite3
 import os
 
-DB_PATH = os.path.expanduser("~")
-DB_NAME = os.path.join(DB_PATH, "veterinaria.db")
+local_appdata = os.environ.get('LOCALAPPDATA', os.path.expanduser('~'))
+db_dir = os.path.join(local_appdata, 'veterinaria_app')
+os.makedirs(db_dir, exist_ok=True)
+DB_NAME = os.path.join(db_dir, "veterinaria.db")
 
 def obtener_conexion():
     conexion = sqlite3.connect(DB_NAME)
