@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from configuracion.base_datos import inicializar_base_datos
 from Controladores.mascotas_controlador import MascotaControlador
+from Controladores.Reserva_controlador import ReservaControlador
 
 inicializar_base_datos()
 
