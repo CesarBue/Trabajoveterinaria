@@ -45,7 +45,7 @@ class MascotaControlador:
 
     @staticmethod
     def listar_mascotas_usuario(id_usuario):
-        """Devuelve la lista de mascotas registradas por el usuario."""
+        """Devuelve la lista de mascotas registradas por un usuario específico (para Clientes)."""
         try:
             conexion = obtener_conexion()
             cursor = conexion.cursor()
@@ -67,6 +67,36 @@ class MascotaControlador:
                     "edad": f[4],
                     "peso": f[5],
                     "observaciones": f[6]
+                })
+            return mascotas
+        except Exception:
+            return []
+
+    @staticmethod
+    def listar_todas_mascotas():
+        """Devuelve la lista completa de todas las mascotas registradas en el sistema (para Empleados)."""
+        try:
+            conexion = obtener_conexion()
+            cursor = conexion.cursor()
+            cursor.execute("""
+                SELECT m.id_mascota, m.nombre, m.tipo, m.raza, m.edad, m.peso, m.observaciones, u.nombre as dueno
+                FROM mascotas m
+                JOIN usuarios u ON m.id_usuario = u.id_usuario
+            """)
+            filas = cursor.fetchall()
+            conexion.close()
+
+            mascotas = []
+            for f in filas:
+                mascotas.append({
+                    "id_mascota": f[0],
+                    "nombre": f[1],
+                    "tipo": f[2],
+                    "raza": f[3],
+                    "edad": f[4],
+                    "peso": f[5],
+                    "observaciones": f[6],
+                    "dueno": f[7]
                 })
             return mascotas
         except Exception:
