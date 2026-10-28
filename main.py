@@ -1,9 +1,11 @@
+import hashlib
 import tkinter as tk
 from tkinter import ttk, messagebox
 from configuracion.base_datos import inicializar_base_datos
 from controladores.mascotas_controlador import MascotaControlador
 from controladores.reserva_controlador import ReservaControlador
 from controladores.historial_controlador import HistorialControlador
+from modelos.usuario import Usuario
 
 # Inicializar la base de datos y tablas al arrancar la aplicación
 inicializar_base_datos()
@@ -21,11 +23,167 @@ FONT_SUBTITLE = ("Segoe UI", 12, "bold")
 FONT_BODY = ("Segoe UI", 10)
 FONT_BOLD = ("Segoe UI", 10, "bold")
 
-# USUARIO ACTUAL (Temporal para demostración)
-usuario_actual = {
-    "id_usuario": 1,
-    "nombre": "Cesar David (Dueño)"
-}
+# USUARIO ACTUAL (Mantenido global para la sesión activa)
+usuario_actual = None
+
+
+# ============================================================
+# FUNCIONES DE AUTENTICACIÓN Y ROLES (DIAGRAMA 1)
+# ============================================================
+
+def mostrar_pantalla_login():
+    limpiar_contenido_total()
+
+    frame_login = tk.Frame(ventana, bg=COLOR_BG_MAIN)
+    frame_login.pack(expand=True)
+
+    card = tk.Frame(frame_login, bg=COLOR_CARD_BG, bd=1, relief="solid", padx=40, pady=30)
+    card.pack()
+
+    tk.Label(card, text="🐾 Veterinaria UAN", font=("Segoe UI", 22, "bold"), bg=COLOR_CARD_BG, fg=COLOR_PRIMARY).pack(pady=(0, 5))
+    tk.Label(card, text="Iniciar Sesión", font=FONT_TITLE, bg=COLOR_CARD_BG, fg=COLOR_TEXT).pack(pady=(0, 20))
+
+    tk.Label(card, text="Correo electrónico:", font=FONT_BOLD, bg=COLOR_CARD_BG, fg=COLOR_TEXT).pack(anchor="w", pady=(10, 2))
+    ent_email = tk.Entry(card, font=FONT_BODY, bd=1, relief="solid", width=35)
+    ent_email.pack(ipady=4, pady=(0, 10))
+
+    tk.Label(card, text="Contraseña:", font=FONT_BOLD, bg=COLOR_CARD_BG, fg=COLOR_TEXT).pack(anchor="w", pady=(5, 2))
+    ent_pass = tk.Entry(card, font=FONT_BODY, bd=1, relief="solid", show="•", width=35)
+    ent_pass.pack(ipady=4, pady=(0, 20))
+
+    def procesar_login():
+        global usuario_actual
+        email = ent_email.get().strip()
+        contrasena = ent_pass.get().strip()
+
+        if not email or not contrasena:
+            messagebox.showerror("Atención", "Error: Credenciales inválidas. Por favor completa ambos campos.")
+            return
+
+        usuario = Usuario.iniciar_sesion(email, contrasena)
+        if usuario:
+            usuario_actual = usuario
+            limpiar_contenido_total()
+            construir_interfaz_principal()
+        else:
+            messagebox.showerror("Error", "Error: Credenciales inválidas. Revisa tu correo o contraseña.")
+
+    tk.Button(
+        card, text="🔑 Iniciar Sesión", font=FONT_BOLD, bg=COLOR_PRIMARY, fg="white",
+        activebackground=COLOR_PRIMARY_HOVER, activeforeground="white", bd=0, cursor="hand2",
+        command=procesar_login, pady=8, width=30
+    ).pack(pady=(0, 15))
+
+    btn_reg = tk.Label(card, text="¿No tienes cuenta? Regístrate aquí", font=FONT_BODY, bg=COLOR_CARD_BG, fg=COLOR_PRIMARY, cursor="hand2")
+    btn_reg.pack()
+    btn_reg.bind("<Button-1>", lambda e: mostrar_pantalla_registro())
+
+
+def mostrar_pantalla_registro():
+    limpiar_contenido_total()
+
+    frame_reg = tk.Frame(ventana, bg=COLOR_BG_MAIN)
+    frame_reg.pack(expand=True, pady=20)
+
+    card = tk.Frame(frame_reg, bg=COLOR_CARD_BG, bd=1, relief="solid", padx=40, pady=25)
+    card.pack()
+
+    tk.Label(card, text="📝 Crear Nueva Cuenta", font=FONT_TITLE, bg=COLOR_CARD_BG, fg=COLOR_TEXT).pack(pady=(0, 15))
+
+    def crear_campo(parent, texto, secret=False):
+        tk.Label(parent, text=texto, font=FONT_BOLD, bg=COLOR_CARD_BG, fg=COLOR_TEXT).pack(anchor="w", pady=(6, 2))
+        entry = tk.Entry(parent, font=FONT_BODY, bd=1, relief="solid", width=35, show="•" if secret else "")
+        entry.pack(ipady=3, pady=(0, 5))
+        return entry
+
+    ent_nombre = crear_campo(card, "Nombre completo:")
+    ent_email = crear_campo(card, "Correo electrónico:")
+    ent_pass = crear_campo(card, "Contraseña:", secret=True)
+
+    tk.Label(card, text="¿Es Empleado o Cliente?", font=FONT_BOLD, bg=COLOR_CARD_BG, fg=COLOR_TEXT).pack(anchor="w", pady=(6, 2))
+    combo_rol = ttk.Combobox(card, values=["Cliente", "Empleado"], state="readonly", font=FONT_BODY, width=33)
+    combo_rol.set("Cliente")
+    combo_rol.pack(ipady=2, pady=(0, 5))
+
+    frame_empleado = tk.Frame(card, bg=COLOR_CARD_BG)
+
+    tk.Label(frame_empleado, text="Rol del Empleado:", font=FONT_BOLD, bg=COLOR_CARD_BG, fg=COLOR_TEXT).pack(anchor="w", pady=(6, 2))
+    combo_subrol = ttk.Combobox(frame_empleado, values=["Médico Veterinario", "Estilista", "Cuidador"], state="readonly", font=FONT_BODY, width=33)
+    combo_subrol.set("Médico Veterinario")
+    combo_subrol.pack(ipady=2, pady=(0, 5))
+
+    frame_especialidad = tk.Frame(frame_empleado, bg=COLOR_CARD_BG)
+    ent_especialidad = crear_campo(frame_especialidad, "Especialidad:")
+    ent_telefono = crear_campo(card, "Teléfono de contacto:")
+
+    def toggle_empleado_fields(event):
+        if combo_rol.get() == "Empleado":
+            frame_empleado.pack(fill="x")
+            toggle_vet_fields(None)
+        else:
+            frame_empleado.pack_forget()
+
+    def toggle_vet_fields(event):
+        if combo_subrol.get() == "Médico Veterinario":
+            frame_especialidad.pack(fill="x")
+        else:
+            frame_especialidad.pack_forget()
+
+    combo_rol.bind("<<ComboboxSelected>>", toggle_empleado_fields)
+    combo_subrol.bind("<<ComboboxSelected>>", toggle_vet_fields)
+
+    def registrar_usuario_click():
+        nombre = ent_nombre.get().strip()
+        email = ent_email.get().strip()
+        contrasena = ent_pass.get().strip()
+        rol_seleccionado = combo_rol.get()
+        telefono = ent_telefono.get().strip()
+
+        if not nombre or not email or not contrasena:
+            messagebox.showerror("Atención", "Nombre, correo y contraseña son obligatorios.")
+            return
+
+        especialidad = None
+        if rol_seleccionado == "Empleado":
+            subrol = combo_subrol.get()
+            if subrol == "Médico Veterinario":
+                especialidad = ent_especialidad.get().strip()
+                if not especialidad:
+                    messagebox.showerror("Atención", "Debes ingresar tu especialidad médica.")
+                    return
+
+        nuevo_u = Usuario(
+            nombre=nombre,
+            email=email,
+            contrasena=contrasena,
+            rol=rol_seleccionado,
+            especialidad=especialidad,
+            telefono=telefono
+        )
+        exito, msg = nuevo_u.registrar()
+
+        if exito:
+            messagebox.showinfo("¡Éxito!", msg)
+            mostrar_pantalla_login()
+        else:
+            messagebox.showerror("Error", msg)
+
+    tk.Button(
+        card, text="💾 Registrar Usuario", font=FONT_BOLD, bg=COLOR_PRIMARY, fg="white",
+        activebackground=COLOR_PRIMARY_HOVER, activeforeground="white", bd=0, cursor="hand2",
+        command=registrar_usuario_click, pady=8, width=30
+    ).pack(pady=(15, 10))
+
+    btn_back = tk.Label(card, text="← Volver al inicio de sesión", font=FONT_BODY, bg=COLOR_CARD_BG, fg=COLOR_MUTED, cursor="hand2")
+    btn_back.pack()
+    btn_back.bind("<Button-1>", lambda e: mostrar_pantalla_login())
+
+
+def cerrar_sesion():
+    global usuario_actual
+    usuario_actual = None
+    limpiar_contenido_total()
+    mostrar_pantalla_login()
 
 
 # ============================================================
@@ -570,9 +728,79 @@ def mostrar_lista_historial():
                 ).pack(anchor="w", padx=10, pady=2)
 
 
+# ============================================================
+# NAVEGACIÓN Y ESTRUCTURA DE PANTALLA
+# ============================================================
+
 def limpiar_contenido():
     for widget in frame_contenido.winfo_children():
         widget.destroy()
+
+def limpiar_contenido_total():
+    for widget in ventana.winfo_children():
+        widget.destroy()
+
+def construir_interfaz_principal():
+    global frame_menu, frame_contenido
+
+    # MENÚ LATERAL (SIDEBAR)
+    frame_menu = tk.Frame(ventana, width=230, bg=COLOR_SIDEBAR)
+    frame_menu.pack(side="left", fill="y")
+    frame_menu.pack_propagate(False)
+
+    tk.Label(
+        frame_menu,
+        text="VETERINARIA",
+        font=("Segoe UI", 18, "bold"),
+        bg=COLOR_SIDEBAR,
+        fg="white"
+    ).pack(pady=(40, 5))
+
+    tk.Label(
+        frame_menu,
+        text=f"Hola, {usuario_actual['nombre']} 👋\n[{usuario_actual['rol']}]",
+        font=FONT_BODY,
+        bg=COLOR_SIDEBAR,
+        fg="#94A3B8"
+    ).pack(pady=(0, 20))
+
+    # Botones del menú
+    tk.Button(
+        frame_menu, text="🐾  Mis Mascotas", font=FONT_BOLD, bg=COLOR_SIDEBAR, fg="white",
+        activebackground="#334155", activeforeground="white", bd=0, anchor="w", padx=25, cursor="hand2",
+        command=mostrar_lista_mascotas
+    ).pack(fill="x", pady=5, ipady=8)
+
+    tk.Button(
+        frame_menu, text="➕  Agregar Mascota", font=FONT_BOLD, bg=COLOR_SIDEBAR, fg="white",
+        activebackground="#334155", activeforeground="white", bd=0, anchor="w", padx=25, cursor="hand2",
+        command=mostrar_formulario
+    ).pack(fill="x", pady=5, ipady=8)
+
+    tk.Button(
+        frame_menu, text="📅  Mis Reservas", font=FONT_BOLD, bg=COLOR_SIDEBAR, fg="white",
+        activebackground="#334155", activeforeground="white", bd=0, anchor="w", padx=25, cursor="hand2",
+        command=mostrar_lista_reservas
+    ).pack(fill="x", pady=5, ipady=8)
+
+    tk.Button(
+        frame_menu, text="💉  Historial y Vacunas", font=FONT_BOLD, bg=COLOR_SIDEBAR, fg="white",
+        activebackground="#334155", activeforeground="white", bd=0, anchor="w", padx=25, cursor="hand2",
+        command=mostrar_lista_historial
+    ).pack(fill="x", pady=5, ipady=8)
+
+    tk.Button(
+        frame_menu, text="🚪  Cerrar Sesión", font=FONT_BOLD, bg="#EF4444", fg="white",
+        activebackground="#DC2626", activeforeground="white", bd=0, anchor="center", cursor="hand2",
+        command=cerrar_sesion
+    ).pack(side="bottom", fill="x", pady=20, padx=20, ipady=6)
+
+    # CONTENEDOR PRINCIPAL DE CONTENIDO
+    frame_contenido = tk.Frame(ventana, bg=COLOR_BG_MAIN)
+    frame_contenido.pack(side="right", fill="both", expand=True)
+
+    # Cargar vista predeterminada
+    mostrar_lista_mascotas()
 
 
 # ============================================================
@@ -583,58 +811,8 @@ ventana.title("Sistema de Gestión de Mascotas - Veterinaria UAN")
 ventana.geometry("900x700")
 ventana.configure(bg=COLOR_BG_MAIN)
 
-# MENÚ LATERAL (SIDEBAR)
-frame_menu = tk.Frame(ventana, width=230, bg=COLOR_SIDEBAR)
-frame_menu.pack(side="left", fill="y")
-frame_menu.pack_propagate(False)
-
-tk.Label(
-    frame_menu,
-    text="VETERINARIA",
-    font=("Segoe UI", 18, "bold"),
-    bg=COLOR_SIDEBAR,
-    fg="white"
-).pack(pady=(40, 5))
-
-tk.Label(
-    frame_menu,
-    text=f"Hola, {usuario_actual['nombre']} 👋",
-    font=FONT_BODY,
-    bg=COLOR_SIDEBAR,
-    fg="#94A3B8"
-).pack(pady=(0, 30))
-
-# Botones del menú
-tk.Button(
-    frame_menu, text="🐾  Mis Mascotas", font=FONT_BOLD, bg=COLOR_SIDEBAR, fg="white",
-    activebackground="#334155", activeforeground="white", bd=0, anchor="w", padx=25, cursor="hand2",
-    command=mostrar_lista_mascotas
-).pack(fill="x", pady=5, ipady=8)
-
-tk.Button(
-    frame_menu, text="➕  Agregar Mascota", font=FONT_BOLD, bg=COLOR_SIDEBAR, fg="white",
-    activebackground="#334155", activeforeground="white", bd=0, anchor="w", padx=25, cursor="hand2",
-    command=mostrar_formulario
-).pack(fill="x", pady=5, ipady=8)
-
-tk.Button(
-    frame_menu, text="📅  Mis Reservas", font=FONT_BOLD, bg=COLOR_SIDEBAR, fg="white",
-    activebackground="#334155", activeforeground="white", bd=0, anchor="w", padx=25, cursor="hand2",
-    command=mostrar_lista_reservas
-).pack(fill="x", pady=5, ipady=8)
-
-tk.Button(
-    frame_menu, text="💉  Historial y Vacunas", font=FONT_BOLD, bg=COLOR_SIDEBAR, fg="white",
-    activebackground="#334155", activeforeground="white", bd=0, anchor="w", padx=25, cursor="hand2",
-    command=mostrar_lista_historial
-).pack(fill="x", pady=5, ipady=8)
-
-# CONTENEDOR PRINCIPAL DE CONTENIDO
-frame_contenido = tk.Frame(ventana, bg=COLOR_BG_MAIN)
-frame_contenido.pack(side="right", fill="both", expand=True)
-
-# Iniciar mostrando la lista de mascotas
-mostrar_lista_mascotas()
+# Iniciar mostrando la pantalla de login
+mostrar_pantalla_login()
 
 # Ejecutar bucle principal de la aplicación
 ventana.mainloop()
