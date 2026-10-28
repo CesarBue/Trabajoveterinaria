@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-from configuracion.base_datos import inicializar_base_datos, obtener_conexion
+from configuracion.base_datos import inicializar_base_datos
 from controladores.mascotas_controlador import MascotaControlador
 from controladores.reserva_controlador import ReservaControlador
 from controladores.historial_controlador import HistorialControlador
@@ -53,7 +53,7 @@ class VeterinariaApp:
         self.crear_boton_menu("📅  Mis Reservas", self.mostrar_reservas)
         self.crear_boton_menu("🩺  Historial y Vacunas", self.mostrar_historial)
 
-        # Botón de Cerrar Sesión (Punto 9)
+        # Botón de Cerrar Sesión (Punto 9) al fondo del menú
         btn_salir = tk.Button(
             self.frame_menu, text="🚪  Cerrar Sesión", font=self.FONT_BOLD, bg="#DC2626", fg="white",
             activebackground="#B91C1C", activeforeground="white", bd=0, anchor="w", padx=25, cursor="hand2",
@@ -83,7 +83,7 @@ class VeterinariaApp:
     def mostrar_lista_mascotas(self):
         self.limpiar_contenido()
         
-        lbl = tk.Label(self.frame_contenido, text="Mis Mascotas (Base de Datos)", font=self.FONT_TITLE, bg=self.COLOR_BG_MAIN, fg=self.COLOR_TEXT)
+        lbl = tk.Label(self.frame_contenido, text="Mis Mascotas", font=self.FONT_TITLE, bg=self.COLOR_BG_MAIN, fg=self.COLOR_TEXT)
         lbl.pack(anchor="w", padx=30, pady=20)
 
         mascotas = MascotaControlador.obtener_mascotas_por_usuario(usuario_actual["id_usuario"])
@@ -93,14 +93,13 @@ class VeterinariaApp:
             lbl_vacio.pack(padx=30, anchor="w", pady=10)
         else:
             for m in mascotas:
-                # m = (id_mascota, id_usuario, nombre, tipo, raza, edad, peso, observaciones)
                 frame_card = tk.Frame(self.frame_contenido, bg="white", bd=1, relief="solid")
                 frame_card.pack(fill="x", padx=30, pady=6, ipady=8, ipadx=15)
 
                 info_text = f"🐾 {m[2]}  |  Tipo: {m[3]}  |  Raza: {m[4]}  |  Edad: {m[5]} años  |  Peso: {m[6]} kg"
                 tk.Label(frame_card, text=info_text, font=self.FONT_BOLD, bg="white", fg=self.COLOR_TEXT).pack(side="left", anchor="w")
 
-                # Botón para eliminar mascota (Punto 10)
+                # Botón para eliminar mascota
                 btn_eliminar = tk.Button(
                     frame_card, text="Eliminar", bg="#EF4444", fg="white", font=("Arial", 9, "bold"),
                     bd=0, padx=10, pady=2, cursor="hand2",
@@ -108,7 +107,6 @@ class VeterinariaApp:
                 )
                 btn_eliminar.pack(side="right", padx=10)
 
-        # Botón inferior para ir al registro
         btn_reg = tk.Button(
             self.frame_contenido, text="+ Registrar Nueva Mascota", font=self.FONT_BOLD, bg=self.COLOR_PRIMARY, fg="white",
             padx=15, pady=8, bd=0, cursor="hand2", command=self.mostrar_registro_mascota
@@ -167,21 +165,21 @@ class VeterinariaApp:
                 messagebox.showerror("Error", f"No se pudo registrar: {e}")
 
         btn_guardar = tk.Button(self.frame_contenido, text="Guardar Mascota", font=self.FONT_BOLD, bg=self.COLOR_PRIMARY, fg="white", padx=20, pady=8, bd=0, cursor="hand2", command=guardar)
-        btn_guardar.pack(anchor="w", padx=30, pady=20)
-
     def mostrar_reservas(self):
         self.limpiar_contenido()
         lbl = tk.Label(self.frame_contenido, text="Gestión de Reservas y Citas", font=self.FONT_TITLE, bg=self.COLOR_BG_MAIN, fg=self.COLOR_TEXT)
         lbl.pack(anchor="w", padx=30, pady=20)
-
-        tk.Label(self.frame_contenido, text="Aquí podrás gestionar y agendar las citas de tus mascotas.", font=self.FONT_NORMAL, bg=self.COLOR_BG_MAIN, fg="#64748B").pack(anchor="w", padx=30)
+        
+        lbl_info = tk.Label(self.frame_contenido, text="Aquí podrás gestionar y agendar las citas de tus mascotas.", font=self.FONT_NORMAL, bg=self.COLOR_BG_MAIN, fg="#64748B")
+        lbl_info.pack(anchor="w", padx=30)
 
     def mostrar_historial(self):
         self.limpiar_contenido()
         lbl = tk.Label(self.frame_contenido, text="Historial Médico y Vacunas", font=self.FONT_TITLE, bg=self.COLOR_BG_MAIN, fg=self.COLOR_TEXT)
         lbl.pack(anchor="w", padx=30, pady=20)
 
-        tk.Label(self.frame_contenido, text="Consulta el carnet de vacunación y notas médicas de tus mascotas.", font=self.FONT_NORMAL, bg=self.COLOR_BG_MAIN, fg="#64748B").pack(anchor="w", padx=30)
+        lbl_info = tk.Label(self.frame_contenido, text="Consulta el carnet de vacunación y notas médicas de tus mascotas.", font=self.FONT_NORMAL, bg=self.COLOR_BG_MAIN, fg="#64748B")
+        lbl_info.pack(anchor="w", padx=30)
 
     def cerrar_sesion(self):
         respuesta = messagebox.askyesno("Cerrar Sesión", "¿Estás seguro de que deseas cerrar sesión?")
