@@ -36,11 +36,11 @@ class VeterinariaApp:
         self.main_container.pack(fill="both", expand=True)
 
         # Menú lateral (Sidebar)
-        self.frame_menu = tk.Frame(self.main_container, bg=self.SIDEBAR_COLOR if hasattr(self, 'SIDEBAR_COLOR') else self.COLOR_SIDEBAR, width=240)
+        self.frame_menu = tk.Frame(self.main_container, bg=self.COLOR_SIDEBAR, width=240)
         self.frame_menu.pack(side="left", fill="y")
         self.frame_menu.pack_propagate(False)
 
-        # Logo / Título en el menú
+        # Título en el menú
         lbl_titulo = tk.Label(self.frame_menu, text="VETERINARIA", font=("Arial", 14, "bold"), bg=self.COLOR_SIDEBAR, fg="white")
         lbl_titulo.pack(pady=(30, 10))
 
@@ -53,7 +53,7 @@ class VeterinariaApp:
         self.crear_boton_menu("📅  Mis Reservas", self.mostrar_reservas)
         self.crear_boton_menu("🩺  Historial y Vacunas", self.mostrar_historial)
 
-        # Botón de Cerrar Sesión (Punto 9) al fondo del menú
+        # Botón de Cerrar Sesión (Punto 9)
         btn_salir = tk.Button(
             self.frame_menu, text="🚪  Cerrar Sesión", font=self.FONT_BOLD, bg="#DC2626", fg="white",
             activebackground="#B91C1C", activeforeground="white", bd=0, anchor="w", padx=25, cursor="hand2",
@@ -84,38 +84,104 @@ class VeterinariaApp:
         self.limpiar_contenido()
         
         lbl = tk.Label(self.frame_contenido, text="Mis Mascotas (Base de Datos)", font=self.FONT_TITLE, bg=self.COLOR_BG_MAIN, fg=self.COLOR_TEXT)
-        lbl.pack(anchor="w", padx=30, pady=30)
+        lbl.pack(anchor="w", padx=30, pady=20)
 
-        # Listar mascotas usando el controlador
         mascotas = MascotaControlador.obtener_mascotas_por_usuario(usuario_actual["id_usuario"])
 
         if not mascotas:
             lbl_vacio = tk.Label(self.frame_contenido, text="No tienes mascotas registradas aún.", font=self.FONT_NORMAL, bg=self.COLOR_BG_MAIN, fg="#64748B")
-            lbl_vacio.pack(padx=30, anchor="w")
+            lbl_vacio.pack(padx=30, anchor="w", pady=10)
         else:
             for m in mascotas:
                 # m = (id_mascota, id_usuario, nombre, tipo, raza, edad, peso, observaciones)
                 frame_card = tk.Frame(self.frame_contenido, bg="white", bd=1, relief="solid")
-                frame_card.pack(fill="x", padx=30, pady=8, ipady=10, ipadx=15)
+                frame_card.pack(fill="x", padx=30, pady=6, ipady=8, ipadx=15)
 
-                tk.Label(frame_card, text=f"🐾 {m[2]}", font=("Arial", 12, "bold"), bg="white", fg=self.COLOR_TEXT).pack(anchor="w")
-                tk.Label(frame_card, text=f"Tipo: {m[3]} | Raza: {m[4]} | Edad: {m[5]} años | Peso: {m[6]} kg", font=self.FONT_NORMAL, bg="white", fg="#475569").pack(anchor="w", pady=2)
+                info_text = f"🐾 {m[2]}  |  Tipo: {m[3]}  |  Raza: {m[4]}  |  Edad: {m[5]} años  |  Peso: {m[6]} kg"
+                tk.Label(frame_card, text=info_text, font=self.FONT_BOLD, bg="white", fg=self.COLOR_TEXT).pack(side="left", anchor="w")
+
+                # Botón para eliminar mascota (Punto 10)
+                btn_eliminar = tk.Button(
+                    frame_card, text="Eliminar", bg="#EF4444", fg="white", font=("Arial", 9, "bold"),
+                    bd=0, padx=10, pady=2, cursor="hand2",
+                    command=lambda id_m=m[0]: self.eliminar_mascota_accion(id_m)
+                )
+                btn_eliminar.pack(side="right", padx=10)
+
+        # Botón inferior para ir al registro
+        btn_reg = tk.Button(
+            self.frame_contenido, text="+ Registrar Nueva Mascota", font=self.FONT_BOLD, bg=self.COLOR_PRIMARY, fg="white",
+            padx=15, pady=8, bd=0, cursor="hand2", command=self.mostrar_registro_mascota
+        )
+        btn_reg.pack(anchor="w", padx=30, pady=20)
+
+    def eliminar_mascota_accion(self, id_mascota):
+        if messagebox.askyesno("Eliminar Mascota", "¿Estás seguro de eliminar esta mascota?"):
+            MascotaControlador.eliminar_mascota(id_mascota)
+            messagebox.showinfo("Éxito", "Mascota eliminada correctamente.")
+            self.mostrar_lista_mascotas()
 
     def mostrar_registro_mascota(self):
         self.limpiar_contenido()
         lbl = tk.Label(self.frame_contenido, text="Registrar Nueva Mascota", font=self.FONT_TITLE, bg=self.COLOR_BG_MAIN, fg=self.COLOR_TEXT)
-        lbl.pack(anchor="w", padx=30, pady=30)
-        # Aquí puedes colocar tu formulario de registro existente
+        lbl.pack(anchor="w", padx=30, pady=20)
+
+        form_frame = tk.Frame(self.frame_contenido, bg=self.COLOR_BG_MAIN)
+        form_frame.pack(anchor="w", padx=30)
+
+        campos = [
+            ("Nombre de la mascota:", "entry_nombre"),
+            ("Tipo (Ej. Perro/Gato):", "entry_tipo"),
+            ("Raza:", "entry_raza"),
+            ("Edad (años):", "entry_edad"),
+            ("Peso (kg):", "entry_peso"),
+            ("Observaciones:", "entry_obs")
+        ]
+
+        entradas = {}
+        for i, (label_text, key) in enumerate(campos):
+            tk.Label(form_frame, text=label_text, font=self.FONT_NORMAL, bg=self.COLOR_BG_MAIN, fg=self.COLOR_TEXT).grid(row=i, column=0, sticky="w", pady=6)
+            entry = tk.Entry(form_frame, font=self.FONT_NORMAL, width=30)
+            entry.grid(row=i, column=1, padx=15, pady=6)
+            entradas[key] = entry
+
+        def guardar():
+            nombre = entradas["entry_nombre"].get().strip()
+            tipo = entradas["entry_tipo"].get().strip()
+            raza = entradas["entry_raza"].get().strip()
+            edad = entradas["entry_edad"].get().strip()
+            peso = entradas["entry_peso"].get().strip()
+            obs = entradas["entry_obs"].get().strip()
+
+            if not nombre or not tipo:
+                messagebox.showerror("Error", "El nombre y el tipo son obligatorios.")
+                return
+
+            try:
+                edad_val = float(edad) if edad else 0.0
+                peso_val = float(peso) if peso else 0.0
+                MascotaControlador.registrar_mascota(usuario_actual["id_usuario"], nombre, tipo, raza, edad_val, peso_val, obs)
+                messagebox.showinfo("Éxito", "¡Mascota registrada exitosamente!")
+                self.mostrar_lista_mascotas()
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo registrar: {e}")
+
+        btn_guardar = tk.Button(self.frame_contenido, text="Guardar Mascota", font=self.FONT_BOLD, bg=self.COLOR_PRIMARY, fg="white", padx=20, pady=8, bd=0, cursor="hand2", command=guardar)
+        btn_guardar.pack(anchor="w", padx=30, pady=20)
 
     def mostrar_reservas(self):
         self.limpiar_contenido()
         lbl = tk.Label(self.frame_contenido, text="Gestión de Reservas y Citas", font=self.FONT_TITLE, bg=self.COLOR_BG_MAIN, fg=self.COLOR_TEXT)
-        lbl.pack(anchor="w", padx=30, pady=30)
+        lbl.pack(anchor="w", padx=30, pady=20)
+
+        tk.Label(self.frame_contenido, text="Aquí podrás gestionar y agendar las citas de tus mascotas.", font=self.FONT_NORMAL, bg=self.COLOR_BG_MAIN, fg="#64748B").pack(anchor="w", padx=30)
 
     def mostrar_historial(self):
         self.limpiar_contenido()
         lbl = tk.Label(self.frame_contenido, text="Historial Médico y Vacunas", font=self.FONT_TITLE, bg=self.COLOR_BG_MAIN, fg=self.COLOR_TEXT)
-        lbl.pack(anchor="w", padx=30, pady=30)
+        lbl.pack(anchor="w", padx=30, pady=20)
+
+        tk.Label(self.frame_contenido, text="Consulta el carnet de vacunación y notas médicas de tus mascotas.", font=self.FONT_NORMAL, bg=self.COLOR_BG_MAIN, fg="#64748B").pack(anchor="w", padx=30)
 
     def cerrar_sesion(self):
         respuesta = messagebox.askyesno("Cerrar Sesión", "¿Estás seguro de que deseas cerrar sesión?")
@@ -123,8 +189,6 @@ class VeterinariaApp:
             global usuario_actual
             usuario_actual = None
             self.root.destroy()
-            # Aquí se podría reabrir la ventana de Login si la tienes modularizada, 
-            # por ahora cierra la aplicación de forma limpia.
 
 if __name__ == "__main__":
     root = tk.Tk()
