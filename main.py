@@ -285,7 +285,14 @@ def mostrar_formulario():
 def mostrar_lista_mascotas():
     limpiar_contenido()
 
-    mascotas_usuario = MascotaControlador.listar_mascotas_usuario(usuario_actual["id_usuario"])
+    es_empleado = usuario_actual["rol"] == "Empleado"
+    
+    if es_empleado:
+        mascotas_usuario = MascotaControlador.listar_todas_mascotas()
+        titulo_texto = "🐾 Listado General de Mascotas (Vista Empleado)"
+    else:
+        mascotas_usuario = MascotaControlador.listar_mascotas_usuario(usuario_actual["id_usuario"])
+        titulo_texto = "🐾 Mis Mascotas (Base de Datos)"
 
     if not mascotas_usuario:
         tk.Label(
@@ -298,26 +305,27 @@ def mostrar_lista_mascotas():
 
         tk.Label(
             frame_contenido,
-            text="Todavía no has registrado ninguna mascota en la base de datos.",
+            text="No hay mascotas registradas en el sistema actualmente." if es_empleado else "Todavía no has registrado ninguna mascota en la base de datos.",
             font=FONT_BODY,
             bg=COLOR_BG_MAIN,
             fg=COLOR_MUTED
         ).pack(pady=5)
 
-        tk.Button(
-            frame_contenido,
-            text="➕ Registrar Mascota",
-            font=FONT_BOLD,
-            bg=COLOR_PRIMARY,
-            fg="white",
-            activebackground=COLOR_PRIMARY_HOVER,
-            activeforeground="white",
-            bd=0,
-            cursor="hand2",
-            padx=20,
-            pady=10,
-            command=mostrar_formulario
-        ).pack(pady=25)
+        if not es_empleado:
+            tk.Button(
+                frame_contenido,
+                text="➕ Registrar Mascota",
+                font=FONT_BOLD,
+                bg=COLOR_PRIMARY,
+                fg="white",
+                activebackground=COLOR_PRIMARY_HOVER,
+                activeforeground="white",
+                bd=0,
+                cursor="hand2",
+                padx=20,
+                pady=10,
+                command=mostrar_formulario
+            ).pack(pady=25)
         return
 
     header_frame = tk.Frame(frame_contenido, bg=COLOR_BG_MAIN)
@@ -325,7 +333,7 @@ def mostrar_lista_mascotas():
 
     tk.Label(
         header_frame,
-        text="🐾 Mis Mascotas (Base de Datos)",
+        text=titulo_texto,
         font=FONT_TITLE,
         bg=COLOR_BG_MAIN,
         fg=COLOR_TEXT
@@ -356,6 +364,8 @@ def mostrar_lista_mascotas():
         info_frame = tk.Frame(card, bg=COLOR_CARD_BG)
         info_frame.pack(side="left", fill="both")
 
+        sub_texto_dueno = f"   •   👤 Dueño: {m['dueno']}" if es_empleado else ""
+
         tk.Label(
             info_frame,
             text=f"❤️ {m['nombre']}",
@@ -366,26 +376,27 @@ def mostrar_lista_mascotas():
 
         tk.Label(
             info_frame,
-            text=f"📌 {m['tipo']} ({m['raza']})   •   ⏳ {m['edad']} años   •   ⚖️ {m['peso']} kg",
+            text=f"📌 {m['tipo']} ({m['raza']})   •   ⏳ {m['edad']} años   •   ⚖️ {m['peso']} kg{sub_texto_dueno}",
             font=FONT_BODY,
             bg=COLOR_CARD_BG,
             fg=COLOR_MUTED
         ).pack(anchor="w", pady=(4, 0))
 
-    tk.Button(
-        frame_contenido,
-        text="➕ Registrar Nueva Mascota",
-        font=FONT_BOLD,
-        bg=COLOR_PRIMARY,
-        fg="white",
-        activebackground=COLOR_PRIMARY_HOVER,
-        activeforeground="white",
-        bd=0,
-        cursor="hand2",
-        padx=20,
-        pady=10,
-        command=mostrar_formulario
-    ).pack(pady=20)
+    if not es_empleado:
+        tk.Button(
+            frame_contenido,
+            text="➕ Registrar Nueva Mascota",
+            font=FONT_BOLD,
+            bg=COLOR_PRIMARY,
+            fg="white",
+            activebackground=COLOR_PRIMARY_HOVER,
+            activeforeground="white",
+            bd=0,
+            cursor="hand2",
+            padx=20,
+            pady=10,
+            command=mostrar_formulario
+        ).pack(pady=20)
 
 
 # ============================================================
@@ -771,11 +782,13 @@ def construir_interfaz_principal():
         command=mostrar_lista_mascotas
     ).pack(fill="x", pady=5, ipady=8)
 
-    tk.Button(
-        frame_menu, text="➕  Agregar Mascota", font=FONT_BOLD, bg=COLOR_SIDEBAR, fg="white",
-        activebackground="#334155", activeforeground="white", bd=0, anchor="w", padx=25, cursor="hand2",
-        command=mostrar_formulario
-    ).pack(fill="x", pady=5, ipady=8)
+    # Solo mostrar botón de agregar mascota si es cliente
+    if usuario_actual["rol"] == "Cliente":
+        tk.Button(
+            frame_menu, text="➕  Agregar Mascota", font=FONT_BOLD, bg=COLOR_SIDEBAR, fg="white",
+            activebackground="#334155", activeforeground="white", bd=0, anchor="w", padx=25, cursor="hand2",
+            command=mostrar_formulario
+        ).pack(fill="x", pady=5, ipady=8)
 
     tk.Button(
         frame_menu, text="📅  Mis Reservas", font=FONT_BOLD, bg=COLOR_SIDEBAR, fg="white",
