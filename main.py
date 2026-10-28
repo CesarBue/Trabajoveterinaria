@@ -172,30 +172,31 @@ class VeterinariaApp:
         lbl.pack(anchor="w", padx=30, pady=20)
 
         # Consultar reservas de las mascotas del usuario actual desde SQLite
-        conexion = obtener_conexion()
-        cursor = conexion.cursor()
-        cursor.execute("""
-            SELECT r.id_reserva, m.nombre, r.servicio, r.fecha, r.hora, r.costo 
-            FROM reservas r 
-            JOIN mascotas m ON r.id_mascota = m.id_mascota 
-            WHERE m.id_usuario = ?
-        """, (usuario_actual["id_usuario"],))
-        reservas = cursor.fetchall()
-        conexion.close()
+        try:
+            conexion = obtener_conexion()
+            cursor = conexion.cursor()
+            cursor.execute("""
+                SELECT r.id_reserva, m.nombre, r.servicio, r.fecha, r.hora, r.costo 
+                FROM reservas r 
+                JOIN mascotas m ON r.id_mascota = m.id_mascota 
+                WHERE m.id_usuario = ?
+            """, (usuario_actual["id_usuario"],))
+            reservas = cursor.fetchall()
+            conexion.close()
+        except Exception as e:
+            reservas = []
 
         if not reservas:
             lbl_vacio = tk.Label(self.frame_contenido, text="No tienes reservas o citas agendadas.", font=self.FONT_NORMAL, bg=self.COLOR_BG_MAIN, fg="#64748B")
             lbl_vacio.pack(padx=30, anchor="w", pady=10)
         else:
             for r in reservas:
-                # r = (id_reserva, nombre_mascota, servicio, fecha, hora, costo)
                 frame_card = tk.Frame(self.frame_contenido, bg="white", bd=1, relief="solid")
                 frame_card.pack(fill="x", padx=30, pady=6, ipady=8, ipadx=15)
 
                 info_text = f"📅 Cita para {r[1]} | Servicio: {r[2]} | Fecha: {r[3]} {r[4]} | Costo: ${r[5]}"
                 tk.Label(frame_card, text=info_text, font=self.FONT_BOLD, bg="white", fg=self.COLOR_TEXT).pack(side="left", anchor="w")
 
-                # Botón para eliminar cita (Punto 11)
                 btn_eliminar_cita = tk.Button(
                     frame_card, text="Cancelar Cita", bg="#EF4444", fg="white", font=("Arial", 9, "bold"),
                     bd=0, padx=10, pady=2, cursor="hand2",
@@ -218,24 +219,25 @@ class VeterinariaApp:
         lbl = tk.Label(self.frame_contenido, text="Historial Médico y Vacunas", font=self.FONT_TITLE, bg=self.COLOR_BG_MAIN, fg=self.COLOR_TEXT)
         lbl.pack(anchor="w", padx=30, pady=20)
 
-        # Consultar historial médico de las mascotas del usuario
-        conexion = obtener_conexion()
-        cursor = conexion.cursor()
-        cursor.execute("""
-            SELECT h.id_historial, m.nombre, h.tipo_evento, h.descripcion, h.fecha 
-            FROM historial_medico h 
-            JOIN mascotas m ON h.id_mascota = m.id_mascota 
-            WHERE m.id_usuario = ?
-        """, (usuario_actual["id_usuario"],))
-        historiales = cursor.fetchall()
-        conexion.close()
+        try:
+            conexion = obtener_conexion()
+            cursor = conexion.cursor()
+            cursor.execute("""
+                SELECT h.id_historial, m.nombre, h.tipo_evento, h.descripcion, h.fecha 
+                FROM historial_medico h 
+                JOIN mascotas m ON h.id_mascota = m.id_mascota 
+                WHERE m.id_usuario = ?
+            """, (usuario_actual["id_usuario"],))
+            historiales = cursor.fetchall()
+            conexion.close()
+        except Exception as e:
+            historiales = []
 
         if not historiales:
             lbl_vacio = tk.Label(self.frame_contenido, text="No hay registros en el historial médico o de vacunación.", font=self.FONT_NORMAL, bg=self.COLOR_BG_MAIN, fg="#64748B")
             lbl_vacio.pack(padx=30, anchor="w", pady=10)
         else:
             for h in historiales:
-                # h = (id_historial, nombre_mascota, tipo_evento, descripcion, fecha)
                 frame_card = tk.Frame(self.frame_contenido, bg="white", bd=1, relief="solid")
                 frame_card.pack(fill="x", padx=30, pady=6, ipady=8, ipadx=15)
 
